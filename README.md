@@ -1,3 +1,20 @@
+quick start:
+cd to file path
+npm install
+node bin\naivecoin.js
+http://localhost:3001/api-docs/
+
+data structure of transaction:
+{
+	"fromAddress": "e155df3a1bac05f88321b73931b48b54ea4300be9d1225e0b62638f537e5544c",
+	"toAddress": "c3c96504e432e35caa94c30034e70994663988ab80f94e4b526829c99958afa8",
+	"amount": 0,
+	"studentId": "your-student-id1",
+	"eventId": "your-event-id2",
+	"timestamp": 1732597566155,
+	"changeAddress": "e155df3a1bac05f88321b73931b48b54ea4300be9d1225e0b62638f537e5544c"
+}
+
 # Naivecoin - a cryptocurrency implementation in less than 1500 lines of code
 
 [![Build Status](https://travis-ci.org/conradoqg/naivecoin.svg?branch=master)](https://travis-ci.org/conradoqg/naivecoin) [![Coverage Status](https://coveralls.io/repos/github/conradoqg/naivecoin/badge.svg?branch=master)](https://coveralls.io/github/conradoqg/naivecoin?branch=master)
