@@ -1,0 +1,76 @@
+class ChainInfo {
+    constructor(chain, length, totalDifficulty) {
+        this.chain = chain;
+        this.length = length;
+        this.totalDifficulty = totalDifficulty;
+    }
+}
+
+function resolveFork(newChain) {
+    const currentChainInfo = new ChainInfo(this.blockchain, this.blockchain.length, calculateTotalDifficulty(this.blockchain));
+    const newChainInfo = new ChainInfo(newChain, newChain.length, calculateTotalDifficulty(newChain));
+
+    if (newChainInfo.length > currentChainInfo.length || 
+        (newChainInfo.length === currentChainInfo.length && newChainInfo.totalDifficulty > currentChainInfo.totalDifficulty)) {
+        this.blockchain = newChain; // Accept new chain
+        console.log("Accepted new chain.");
+    } else {
+        console.log("Rejected new chain.");
+    }
+}
+function createTransaction(fromAddress, toAddress, amount, fee) {
+    // Calculate total input
+    const totalInput = calculateTotalInput(fromAddress);
+    // Check the balance is sufficient (including fees)
+    if (totalInput < amount + fee) {
+        throw new Error("Insufficient funds.");
+    }
+
+    // 创建交易
+    const transaction = {
+        id: generateTransactionId(),
+        from: fromAddress,
+        to: toAddress,
+        amount: amount,
+        fee: fee,
+        
+    };
+
+    // Add to the list of unconfirmed transactions
+    unconfirmedTransactions.push(transaction);
+}
+function mineBlock(minerAddress) {
+    const transactionsToInclude = getPendingTransactions();
+    const feeTotal = transactionsToInclude.reduce((total, txn) => total + txn.fee, 0);
+    const blockReward = 50; //Fixed rewards
+
+    const newBlock = {
+        index: this.blockchain.length,
+        transactions: transactionsToInclude,
+        hash: calculateBlockHash(),
+        miner: minerAddress,
+        reward: blockReward + feeTotal, // Inclusive of transaction costs
+    };
+
+    this.blockchain.push(newBlock);
+}
+const MAX_BLOCK_SIZE = 1e6; // Maximum block size, in bytes
+
+function mineBlock(minerAddress) {
+    const transactionsToInclude = getPendingTransactions();
+
+    //Check the block size limit
+    const blockSize = calculateBlockSize(transactionsToInclude);
+    if (blockSize > MAX_BLOCK_SIZE) {
+        throw new Error("Block size exceeds the limit.");
+    }
+
+    //Mining logic...
+}
+
+function calculateBlockSize(transactions) {
+    // Calculate the total number of bytes of transaction data
+
+
+    return transactions.reduce((total, txn) => total + JSON.stringify(txn).length, 0);
+}
