@@ -77,7 +77,7 @@ function SubmitAttendance() {
 
     const create_body = {
       fromAddress: fromAddress,
-      toAddress: toAddress,
+      toAddress: eventID,
       amount: 1,
       studentId: SID,
       eventId: eventID,

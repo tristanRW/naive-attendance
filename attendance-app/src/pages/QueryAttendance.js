@@ -14,14 +14,39 @@ import {
   Paper,
 } from '@mui/material';
 import axios from 'axios';
+import { set } from 'ramda';
 
-const attendancelist = [];
+let attendancelist = [];
+
+
+async function setTime(startTime, endTime) {  
+  if (startTime == '') {
+    startTime = '0';
+    return startTime, endTime;
+    //startTime = 0;
+  } 
+  if (endTime == '') {
+    endTime = '0';
+    return startTime, endTime;
+    //endTime = 0;
+  } 
+  if (startTime == '' && endTime == '') {
+    endTime = '0';
+    startTime = '0';
+    return startTime, endTime;
+    //startTime = 0;
+    //endTime = 0;
+  }
+
+} 
 
 async function getAllBlock() {
   const dest = `/blockchain/blocks`;
   try {
     const response = await axios.get(dest);
     //return response.data.addresses[0];
+    console.log(response);
+    //alert('You have sccuessfully get all block:');
     return response.data;
   } catch (error) {
     alert('Error fetching all block:', error);
@@ -30,9 +55,20 @@ async function getAllBlock() {
 }
 
 
-function query_studentId(studentId, startTime = 0, endTime = 0) {  //query about a specific student's attendance
-  const jsonObject = getAllBlock();
-  console.log("query record with studentID");
+async function query_studentId(studentId, startTime, endTime) {  //query about a specific student's attendance
+  
+
+  const jsonObject = await getAllBlock();
+
+  console.log(studentId, startTime = 0, endTime = 0);
+
+  //[startTime, endTime] = await setTime(startTime, endTime);
+
+  console.log("query record with studentID12");
+  console.log(jsonObject.length);  
+  console.log(634451);
+  console.log(startTime);
+  console.log(endTime);
 
 
   for (let i = 0; i < jsonObject.length; i++) {
@@ -45,27 +81,46 @@ function query_studentId(studentId, startTime = 0, endTime = 0) {  //query about
               //console.log(jsonObject[i].transactions[j].data.inputs);
               //console.log(jsonObject[i].transactions[j].data.inputs[k].signature);
               
-      // get information
-      let message_studentId = jsonObject[i].transactions[j].data.inputs[k].studentId
-      let message_eventId = jsonObject[i].transactions[j].data.inputs[k].eventId
-      let message_timestamp = jsonObject[i].transactions[j].data.inputs[k].timestamp
+              // get information
+              let message_studentId = jsonObject[i].transactions[j].data.inputs[k].studentId
+              let message_eventId = jsonObject[i].transactions[j].data.inputs[k].eventId
+              let message_timestamp = jsonObject[i].transactions[j].data.inputs[k].timestamp
 
               console.log(message_studentId);
               console.log(message_eventId);
               console.log(message_timestamp);    
-              //console.log(1);  
+              console.log(1111);  
       
               if (message_studentId === null || message_eventId === null || message_timestamp === null) {
                   break;
               }
 
+              let sameData = false;
+              for (let k=0; k < attendancelist.length; k++) {
+                if (attendancelist[k].studentID == message_studentId && attendancelist[k].eventID == message_eventId && attendancelist[k].timestamp == message_timestamp) {
+                  sameData = true;
+                  break;
+                }
+              } 
+
+              if (sameData) {
+                console.log("sameData found, breaking out of the loop");
+                break;
+              }             
+
+              console.log(message_studentId);
+              console.log(7);
+
+              console.log(studentId);
+
               if (message_studentId == studentId) { // match the studentID
 
-                  console.log(message_studentId);
-                  console.log(message_eventId);
-                  console.log(message_timestamp);
 
-                  if (startTime !== 0 && endTime !== 0) {  // have time range
+                  console.log(startTime);
+                  console.log(endTime);
+                  console.log(7778);
+
+                  if (startTime != '' && endTime != '') {  // have time range
                       if (message_timestamp >= startTime && message_timestamp <= endTime) {
                           console.log("have time range");   
                           attendancelist.push({
@@ -74,7 +129,7 @@ function query_studentId(studentId, startTime = 0, endTime = 0) {  //query about
                               "timestamp": message_timestamp
                           });
                       }
-                  }else if (startTime !== 0 && endTime === 0) {   // accept record after startTime
+                  }else if (startTime != '' && endTime == '') {   // accept record after startTime
                       if (message_timestamp >= startTime) {
                           console.log("only have startTime");  
                           attendancelist.push({
@@ -83,7 +138,7 @@ function query_studentId(studentId, startTime = 0, endTime = 0) {  //query about
                               "timestamp": message_timestamp
                           });
                       }
-                  }else if (startTime === 0 && endTime !== 0) {  // accept record before endTime
+                  }else if (startTime == '' && endTime != '') {  // accept record before endTime
                       if (message_timestamp <= endTime) {
                           console.log("only have endTime");  
                           attendancelist.push({
@@ -92,7 +147,7 @@ function query_studentId(studentId, startTime = 0, endTime = 0) {  //query about
                               "timestamp": message_timestamp
                           });
                       }
-                  }else if (startTime === 0 && endTime === 0) {   // no time parameter input
+                  }else if (startTime == '' && endTime == '') {   // no time parameter input
                       console.log("not time limitation"); 
                       attendancelist.push({
                           "studentID": message_studentId,
@@ -110,14 +165,18 @@ function query_studentId(studentId, startTime = 0, endTime = 0) {  //query about
   }
 
   // then, pass attendancelist[] to the web application (front end)
+  console.log("query record with studentID2");
   printAttendance();
+  console.log(attendancelist.length);
 }
 
-function query_eventId(eventId, startTime = 0, endTime = 0) {  //query about class attendance
+
+
+async function query_eventId(eventId, startTime = 0, endTime = 0) {  //query about class attendance
   //const jsonObject = JSON.parse(all_block_info);
   
   console.log("query record with eventID");
-  const jsonObject = getAllBlock();
+  const jsonObject = await getAllBlock();
 
   for (let i = 0; i < jsonObject.length; i++) {
       //console.log(jsonObject[i].transactions[0].data.inputs[0].address);
@@ -144,13 +203,18 @@ function query_eventId(eventId, startTime = 0, endTime = 0) {  //query about cla
                   break;
               }
 
+
+
+
               if (message_eventId == eventId) { // match the studentID
                   
                   console.log(message_studentId);
                   console.log(message_eventId);
                   console.log(message_timestamp);  
 
-                  if (startTime !== 0 && endTime !== 0) {  // have time range
+
+
+                  if (startTime != '' && endTime != '') {  // have time range
                       if (message_timestamp >= startTime && message_timestamp <= endTime) {
                           console.log("have time range"); 
                           attendancelist.push({
@@ -159,7 +223,7 @@ function query_eventId(eventId, startTime = 0, endTime = 0) {  //query about cla
                               "timestamp": message_timestamp
                           });
                       }
-                  }else if (startTime !== 0 && endTime === 0) {   // accept record after startTime
+                  }else if (startTime != '' && endTime == '') {   // accept record after startTime
                       if (message_timestamp >= startTime) {
                           console.log("only have startTime");  
                           attendancelist.push({
@@ -168,7 +232,7 @@ function query_eventId(eventId, startTime = 0, endTime = 0) {  //query about cla
                               "timestamp": message_timestamp
                           });
                       }
-                  }else if (startTime === 0 && endTime !== 0) {  // accept record before endTime
+                  }else if (startTime == '' && endTime != '') {  // accept record before endTime
                       if (message_timestamp <= endTime) {
                           console.log("only have endTime");  
                           attendancelist.push({
@@ -177,7 +241,7 @@ function query_eventId(eventId, startTime = 0, endTime = 0) {  //query about cla
                               "timestamp": message_timestamp
                           });
                       }
-                  }else if (startTime === 0 && endTime === 0) {   // no time parameter input
+                  }else if (startTime == '' && endTime == '') {   // no time parameter input
                       console.log("not time limitation"); 
                       attendancelist.push({
                           "studentID": message_studentId,
@@ -187,12 +251,7 @@ function query_eventId(eventId, startTime = 0, endTime = 0) {  //query about cla
                   }else {
                       console.log("Error: startTime and endTime have problem");
                   }
-
-                  attendancelist.push({
-                      "studentID": message_studentId,
-                      "eventID": message_eventId,
-                      "timestamp": message_timestamp
-                  });
+                  
 
               }
           }
@@ -200,17 +259,27 @@ function query_eventId(eventId, startTime = 0, endTime = 0) {  //query about cla
   }
 
   // then, pass attendancelist[] to the web application (front end)
+
   printAttendance();
+
 }
+
+
+
 
 function printAttendance(){
   if (attendancelist.length !== 0){
       console.log("start of attendance list:");
       for (let i = 0; i < attendancelist.length; i++){
           console.log(attendancelist[i]);
+          console.log(attendancelist[i].studentID);
+
       }
       console.log("end of attendance list");
   }
+  console.log("88");
+  console.log(attendancelist);
+
 }
 
 
@@ -221,48 +290,64 @@ function QueryAttendance() {
   const [startTime, setStartTime] = useState('');
   const [endTime, setEndTime] = useState('');
 
+
+
+
+
   const handleQuery = async () => {
-    if (startTime === null) {
-      startTime = undefined;
-    } 
-    if (endTime === null) {
-      endTime = undefined;
-    } 
-    if (studentID === null && eventID === null) {
-      startTime = undefined;
-      endTime = undefined;
-    }
+    console.log(963258441);
+    console.log(startTime);
+    console.log(endTime);
 
+    //console.log(studentID);
+    console.log(startTime);
+    console.log(endTime);
 
-    if (studentID) {
-      handleQuery1_studentId();
-    } else if (eventID) {
-      handleQuery2_eventId();
+    //clear old data
+    setAttendanceRecords([]); 
+    attendancelist = []; 
+
+    if (studentID != null) {
+      try {
+        console.log(studentID);
+        console.log(startTime);
+        console.log(endTime);
+
+        const response = await query_studentId(studentID, startTime, endTime);
+        //setAttendanceRecords(response.data);
+
+        
+      } catch (error) {
+        console.error('Error fetching attendance records:', error);
+      } 
+      console.log(studentID);
+      console.log(eventID);
+      console.log(1);
+
+    } else if (eventID != null) {
+      try {
+        const response = await query_eventId(eventID, startTime, endTime);
+        //setAttendanceRecords(response.data);
+      } catch (error) {
+        console.error('Error fetching attendance records:', error);
+      } 
+
     } else {
       alert('Please input student ID or event ID');
     }
 
+
+
+
+    console.log(2);
+    console.log(attendancelist);
+    console.log(3);
+    console.log(attendancelist);
+
+    setAttendanceRecords(attendancelist);
   };
 
-  const handleQuery1_studentId = async () => {
 
-    try {
-      const response = await query_studentId(studentID, startTime, endTime);
-      //setAttendanceRecords(response.data);
-      
-    } catch (error) {
-      console.error('Error fetching attendance records:', error);
-    } 
-  };
-
-  const handleQuery2_eventId = async () => {
-    try {
-      const response = await query_eventId(eventID, startTime, endTime);
-      //setAttendanceRecords(response.data);
-    } catch (error) {
-      console.error('Error fetching attendance records:', error);
-    } 
-  };
 
 
   return (
@@ -277,6 +362,7 @@ function QueryAttendance() {
         variant="outlined"
         fullWidth
         margin="normal"
+        disabled={!!eventID}
       />
 
       <TextField
@@ -286,6 +372,7 @@ function QueryAttendance() {
         variant="outlined"
         fullWidth
         margin="normal"
+        disabled={!!studentID}
       />
      
 
@@ -321,11 +408,12 @@ function QueryAttendance() {
         onClick={handleQuery}
         fullWidth
         style={{ marginTop: '16px' }}
+        disabled={!studentID && !eventID}
       >
         Search
       </Button>
 
-      {attendancelist.length > 0 && (
+      {attendanceRecords.length > 0 && (
   <TableContainer component={Paper} style={{ marginTop: '32px' }}>
     <Table>
       <TableHead>
@@ -336,7 +424,7 @@ function QueryAttendance() {
         </TableRow>
       </TableHead>
       <TableBody>
-        {attendancelist.map((record, index) => (
+        {attendanceRecords.map((record, index) => (
           <TableRow key={index}>
             <TableCell>{record.studentID}</TableCell>
             <TableCell>{record.eventID}</TableCell>
