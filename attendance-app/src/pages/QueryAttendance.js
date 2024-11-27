@@ -64,11 +64,9 @@ async function query_studentId(studentId, startTime, endTime) {  //query about a
 
   //[startTime, endTime] = await setTime(startTime, endTime);
 
-  console.log("query record with studentID12");
-  console.log(jsonObject.length);  
+  console.log("query record with studentID1");  
   console.log(634451);
-  console.log(startTime);
-  console.log(endTime);
+
 
 
   for (let i = 0; i < jsonObject.length; i++) {
@@ -89,7 +87,7 @@ async function query_studentId(studentId, startTime, endTime) {  //query about a
               console.log(message_studentId);
               console.log(message_eventId);
               console.log(message_timestamp);    
-              console.log(1111);  
+              console.log('after get information');  
       
               if (message_studentId === null || message_eventId === null || message_timestamp === null) {
                   break;
@@ -108,17 +106,17 @@ async function query_studentId(studentId, startTime, endTime) {  //query about a
                 break;
               }             
 
-              console.log(message_studentId);
-              console.log(7);
 
-              console.log(studentId);
+              console.log('prepare checkstudentID');
+
+
 
               if (message_studentId == studentId) { // match the studentID
 
 
                   console.log(startTime);
                   console.log(endTime);
-                  console.log(7778);
+                  console.log('after check studentID');
 
                   if (startTime != '' && endTime != '') {  // have time range
                       if (message_timestamp >= startTime && message_timestamp <= endTime) {
@@ -203,14 +201,27 @@ async function query_eventId(eventId, startTime = 0, endTime = 0) {  //query abo
                   break;
               }
 
+              let sameData = false;
+              for (let k=0; k < attendancelist.length; k++) {
+                if (attendancelist[k].studentID == message_studentId && attendancelist[k].eventID == message_eventId && attendancelist[k].timestamp == message_timestamp) {
+                  sameData = true;
+                  break;
+                }
+              } 
 
+              if (sameData) {
+                console.log("sameData found, breaking out of the loop");
+                break;
+              }   
 
+              console.log("prepare check eventID");
 
               if (message_eventId == eventId) { // match the studentID
                   
-                  console.log(message_studentId);
-                  console.log(message_eventId);
-                  console.log(message_timestamp);  
+                console.log('after check eventID');
+                console.log(message_studentId);
+                console.log(message_eventId);
+                console.log(message_timestamp);  
 
 
 
@@ -272,12 +283,10 @@ function printAttendance(){
       console.log("start of attendance list:");
       for (let i = 0; i < attendancelist.length; i++){
           console.log(attendancelist[i]);
-          console.log(attendancelist[i].studentID);
-
       }
       console.log("end of attendance list");
   }
-  console.log("88");
+  console.log("full list of attendance:");
   console.log(attendancelist);
 
 }
@@ -295,20 +304,21 @@ function QueryAttendance() {
 
 
   const handleQuery = async () => {
-    console.log(963258441);
+    console.log('start of handleQuery');
     console.log(startTime);
     console.log(endTime);
 
     //console.log(studentID);
-    console.log(startTime);
-    console.log(endTime);
+    //console.log(startTime);
+    //console.log(endTime);
 
     //clear old data
     setAttendanceRecords([]); 
     attendancelist = []; 
 
-    if (studentID != null) {
+    if (studentID != '') {
       try {
+        console.log('start of query_studentId');
         console.log(studentID);
         console.log(startTime);
         console.log(endTime);
@@ -322,27 +332,26 @@ function QueryAttendance() {
       } 
       console.log(studentID);
       console.log(eventID);
-      console.log(1);
+      console.log('end of query_studentId');
 
-    } else if (eventID != null) {
+    } else if (eventID != '') {
       try {
+        console.log('start of query_eventId');
         const response = await query_eventId(eventID, startTime, endTime);
         //setAttendanceRecords(response.data);
       } catch (error) {
         console.error('Error fetching attendance records:', error);
       } 
+      console.log('end of query_eventId');
 
     } else {
       alert('Please input student ID or event ID');
     }
 
-
-
-
-    console.log(2);
-    console.log(attendancelist);
-    console.log(3);
-    console.log(attendancelist);
+    //console.log(2);
+    //console.log(attendancelist);
+    //console.log(3);
+    console.log('waiting to run setAttendanceRecords()');
 
     setAttendanceRecords(attendancelist);
   };
