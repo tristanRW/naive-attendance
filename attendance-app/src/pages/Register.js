@@ -18,19 +18,19 @@ async function create_wallet_with_address(create_body) {
     alert('You have successfully created a wallet');
     console.log(JSON.stringify(response.data));
   } catch (error) {
-    alert(`Error occurred when creating wallet: ${error.response ? error.response.data : error.message}`);
+    const errorMessage = error.response ? JSON.stringify(error.response.data) : error.message;
+    alert(`Error occurred when creating wallet: ${errorMessage}`);
   }
 }
 
 function Register() {
   const [studentID, setStudentID] = useState('');
   const [walletPWD, setWalletPWD] = useState('');
-
-  const handleRegister = () => {
+  const handleRegister = async () => {
     // Implement registration logic here
     const create_body = {
       password: walletPWD,
-      studentID: studentID
+      studentId: studentID
     }
     create_wallet_with_address(create_body);
   };
