@@ -12,15 +12,23 @@ function StartEvent() {
       return;
     }
 
-    try {
-      const response = await axios.post('http://localhost:3001/operator/wallets', {
-        eventId,
-      });
-      setResponseMessage(`Event started successfully: ${response.data.message}`);
-    } catch (error) {
-      console.error('Error starting event:', error);
-      setResponseMessage('Failed to start the event. Please try again.');
-    }
+
+      try {
+          const response = await axios.post('http://localhost:3001/operator/wallets', {
+              eventId: eventId
+          }, {
+              headers: {
+                  'Content-Type': 'application/json'
+              }
+          });
+          setResponseMessage(`Event started successfully`);
+      } catch (error) {
+          console.error('Error starting event:', error);
+          if (error.response && error.response.data && error.response.data.error === `Wallet for event '${eventId}' already exists`) {              setResponseMessage("Wallet for this event already exists.");
+          } else {
+              setResponseMessage('Failed to start the event. Please try again.');
+          }
+      }
   };
 
   return (
