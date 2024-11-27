@@ -17,7 +17,7 @@ async function create_transaction(create_body,wallet_id,password){
   //perform post
   axios.post(dest, create_body, { headers: create_header }) 
     .then(response => {
-      alert('You have sccuessfully create a transaction, attendent will be taken:');
+      alert('You have successfully create a transaction, attendance will be taken');
       console.log(JSON.stringify(response.data))
     })
     .catch(error => {
@@ -48,7 +48,7 @@ async function get_coin(create_body){
   //perform post
   axios.post(dest, create_body, { headers: create_header }) 
     .then(response => {
-      alert('You have sccuessfully get some coins:');
+      alert('You have successfully get some coins:');
       console.log(JSON.stringify(response.data))
     })
     .catch(error => {
@@ -60,7 +60,6 @@ function SubmitAttendance() {
   const [SID, setSID] = useState('');
   const [WalletPWD, setWalletPWD] = useState('');
   const [eventID, setEventID] = useState('');
-  const [toAddress, setToAddress] = useState('');
   const [getcoin, setGetcoin] = useState('');
   //find the targeted address. return when no wallet is found
   const handleSubmit = async () => {
@@ -74,7 +73,7 @@ function SubmitAttendance() {
     //create POST method body
     const create_body = {
       fromAddress: fromAddress,
-      toAddress: toAddress,
+      toAddress: eventID,
       amount: 1,
       studentId: SID,
       eventId: eventID,
@@ -126,14 +125,6 @@ function SubmitAttendance() {
         label="Event ID"
         value={eventID}
         onChange={(e) => setEventID(e.target.value)}
-        variant="outlined"
-        fullWidth
-        margin="normal"
-      />      
-      <TextField
-        label="Attendance Address"
-        value={toAddress}
-        onChange={(e) => setToAddress(e.target.value)}
         variant="outlined"
         fullWidth
         margin="normal"
