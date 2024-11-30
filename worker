@@ -1,0 +1,30 @@
+// worker.js
+const { parentPort } = require('worker_threads');
+const Node = require('./path/to/your/Node'); // 确保路径正确
+const node = new Node();
+node.syncWithPeers().then(() => {
+    parentPort.postMessage('Sync completed.');
+}).catch((error) => {
+    parentPort.postMessage(`Sync failed: ${error.message}`);
+});
+// main.js
+const { Worker } = require('worker_threads');
+
+function startSync() {
+    const worker = new Worker('./worker.js');
+
+    worker.on('message', (message) => {
+        console.log(message); // 输出来自 Worker 的消息
+    });
+
+    worker.on('error', (error) => {
+        console.error('Worker error:', error);
+    });
+
+    worker.on('exit', (code) => {
+        if (code !== 0) {
+            console.error(`Worker stopped with exit code ${code}`);
+        }
+    });
+}
+startSync();
