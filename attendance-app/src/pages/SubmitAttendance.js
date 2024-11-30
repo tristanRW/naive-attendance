@@ -1,26 +1,30 @@
 // src/pages/SubmitAttendance.js
-import React, { useState } from 'react';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import axios from 'axios';
+import React, { useState } from "react";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Container from "@mui/material/Container";
+import Typography from "@mui/material/Typography";
+import axios from "axios";
 
-// POST create_transaction 
+// POST create_transaction
 async function create_transaction(create_body, wallet_id, password) {
-  const dest = `/operator/wallets/${wallet_id}/transactions`; // destination 
+  const dest = `/operator/wallets/${wallet_id}/transactions`; // destination
   const create_header = {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'password': password
+    "Content-Type": "application/json",
+    Accept: "application/json",
+    password: password,
   };
 
   try {
-    const response = await axios.post(dest, create_body, { headers: create_header });
-    alert('You have successfully created a transaction, attendance will be taken:');
+    const response = await axios.post(dest, create_body, {
+      headers: create_header,
+    });
+    alert(
+      "You have successfully created a transaction, attendance will be taken:",
+    );
     console.log(JSON.stringify(response.data));
   } catch (error) {
-    console.error('Error occurred when creating transaction:', error);
+    console.error("Error occurred when creating transaction:", error);
   }
 }
 
@@ -29,47 +33,52 @@ async function GetWalletAddress(wallet_id) {
   const dest = `/operator/wallets/${wallet_id}`;
   try {
     const response = await axios.get(dest);
-    return response.data.addresses[0];
+    console.log(response.data);
+    const wallet = response.data.find((wallet) => wallet.id === wallet_id);
+    console.log(wallet);
+    return wallet ? wallet.addresses[0] : null;
   } catch (error) {
-    alert('Error fetching wallet address:', error);
+    alert("Error fetching wallet address:", error);
     return null;
   }
 }
 
 // Get some coins
 async function get_coin(create_body) {
-  const dest = '/miner/mine'; // destination 
+  const dest = "/miner/mine"; // destination
   const create_header = {
-    'Content-Type': 'application/json',
-    'Accept': 'text/html',
+    "Content-Type": "application/json",
+    Accept: "text/html",
   };
 
   try {
-    const response = await axios.post(dest, create_body, { headers: create_header });
-    alert('You have successfully got some coins:');
+    const response = await axios.post(dest, create_body, {
+      headers: create_header,
+    });
+    alert("You have successfully got some coins:");
     console.log(JSON.stringify(response.data));
   } catch (error) {
-    console.error('Error occurred when getting coins:', error);
+    console.error("Error occurred when getting coins:", error);
   }
 }
 
 function SubmitAttendance() {
-  const [SID, setSID] = useState('');
-  const [WalletPWD, setWalletPWD] = useState('');
-  const [eventID, setEventID] = useState('');
+  const [SID, setSID] = useState("");
+  const [WalletPWD, setWalletPWD] = useState("");
+  const [eventID, setEventID] = useState("");
 
   const handleSubmit = async () => {
     const fromAddress = await GetWalletAddress(SID);
     const toAddress = await GetWalletAddress(eventID);
 
     if (!fromAddress || !toAddress) {
-      alert('Unable to fetch wallet address. Please try again later.');
+      alert("Unable to fetch wallet address. Please try again later.");
       return;
     }
 
     const create_body_mine = {
       rewardAddress: fromAddress,
-      feeAddress: fromAddress
+      feeAddress: fromAddress,
     };
 
     // Wait for get_coin to finish
@@ -82,7 +91,7 @@ function SubmitAttendance() {
       studentId: SID,
       eventId: eventID,
       changeAddress: fromAddress,
-      type: "regular"
+      type: "regular",
     };
 
     // Wait for create_transaction to finish
