@@ -6,6 +6,33 @@ function StartEvent() {
     const [eventId, setEventId] = useState(''); // State to store event ID input
     const [studentIds, setStudentIds] = useState(''); // State to store student IDs input (comma-separated)
     const [responseMessage, setResponseMessage] = useState(''); // State for API response messages
+    async function get_coin(publicKey) {
+        console.log('get_coin called with publicKey:', publicKey); // Add this line to verify the function call
+        const create_body = {
+            rewardAddress: publicKey,
+            feeAddress: publicKey
+        }
+        const dest = 'http://localhost:3001/miner/mine'; // destination
+        //set up header
+        const create_header = {
+            'Content-Type': 'application/json',
+            'Accept': 'Accept: text/html',
+        };
+        /// Perform post
+        try {
+            console.log('Sending request to:', dest); // Add this line to verify the request
+            const response = await axios.post(dest, create_body, {headers: create_header});
+            console.log('Event wallet created successfully on Blockchain.');
+            console.log(JSON.stringify(response.data));
+            setResponseMessage(`Event started successfully`);
+        } catch (error) {
+            console.error('Error occurred when getting coins:', error);
+        }
+    }
+    const handleStartEventAndGetCoin = async () => {
+        await handleStartEvent();
+        await get_coin(eventId);
+    };
 
     const handleStartEvent = async () => {
         if (!eventId) {
@@ -24,8 +51,8 @@ function StartEvent() {
         try {
             // Send POST request to the backend API
             const response = await axios.post('http://localhost:3001/operator/wallets', {
-                eventId,
-                studentIds: studentIdArray, // Pass student ID array
+                eventID: eventId,
+                studentIDList: studentIdArray, // Pass student ID array
             });
 
             // Update the response message on success

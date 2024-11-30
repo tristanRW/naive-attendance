@@ -53,7 +53,7 @@ function Register() {
     // Implement registration logic here
     const create_body = {
       password: walletPWD,
-      studentId: studentID
+      studentID: studentID
     }
     await create_wallet_with_address(create_body);
     await get_coin(studentID);
@@ -84,7 +84,7 @@ function Register() {
       <Button
         variant="contained"
         color="primary"
-        onClick={handleRegister}
+        onClick={handleRegister} // Trigger wallet creation on click
         fullWidth
       >
         Register
